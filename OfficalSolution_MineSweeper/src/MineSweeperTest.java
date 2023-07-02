@@ -32,6 +32,29 @@ public class MineSweeperTest {
         minesweeper = new MineSweeper(input);
     }
 
+    /** Tests the createField method with a 1x1 field that should have no mines. */
+    @Test
+    public final void testCreateField_OneDot() {
+        String input = "1 1\n" +
+                ".";
+        Scanner scanner = new Scanner(input);
+        minesweeper.createField(scanner);
+
+        char[][] expectedField = {{'.'}};
+        Assertions.assertArrayEquals(expectedField, minesweeper.myField);
+    }
+
+    /** Tests the createField method with a 1x1 field that should have only mines. */
+    @Test
+    public final void testCreateField_OneMine() {
+        String input = "1 1\n" +
+                "*";
+        Scanner scanner = new Scanner(input);
+        minesweeper.createField(scanner);
+
+        char[][] expectedField = {{'*'}};
+        Assertions.assertArrayEquals(expectedField, minesweeper.myField);
+    }
     /** Test for our createField Method.*/
     @Test
     public void testCreateField() {
@@ -211,6 +234,47 @@ public class MineSweeperTest {
         Assertions.assertArrayEquals(expectedField, tenByTen);
     }
 
+    /** Test for our decodeField Method when the input is 100x100 with all mines.*/
+    @Test
+    public final void testDecodeField_HundredByHundred_AllMines() {
+        char[][] hundredByHundred = new char[100][100];
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 100; j++) {
+                hundredByHundred[i][j] = '*';
+            }
+        }
+        minesweeper.decodeField(hundredByHundred, minesweeper.myFieldNumber);
+
+        char[][] expectedField = new char[100][100];
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 100; j++) {
+                expectedField[i][j] = '*';
+            }
+        }
+
+        Assertions.assertArrayEquals(expectedField, hundredByHundred);
+    }
+    /** Test for our decodeField Method when the input is 100x100 with no mines.*/
+    @Test
+    public final void testDecodeField_HundredByHundred_AllDots() {
+        char[][] hundredByHundred = new char[100][100];
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 100; j++) {
+                hundredByHundred[i][j] = '.';
+            }
+        }
+        minesweeper.decodeField(hundredByHundred, minesweeper.myFieldNumber);
+
+        char[][] expectedField = new char[100][100];
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 100; j++) {
+                expectedField[i][j] = '0';
+            }
+        }
+
+        Assertions.assertArrayEquals(expectedField, hundredByHundred);
+    }
+
     /** Test for our decodeField Method with assorted mines.*/
     @Test
     public void testDecodeField() {
@@ -233,6 +297,64 @@ public class MineSweeperTest {
         Assertions.assertArrayEquals(expectedField, field);
     }
 
+    /** Test for the countAdjacentMines method with a 1x1 field and no mines.*/
+    @Test
+    public final void testCountAdjacentMines_OneDot() {
+        char[][] oneByOne = {{'.'}};
+        int count = minesweeper.countAdjacentMines(oneByOne, 0, 0);
+        Assertions.assertEquals(0, count);
+        count = minesweeper.countAdjacentMines(oneByOne, 1, 1);
+        Assertions.assertEquals(0, count);
+    }
+
+    /** Test for the countAdjacentMines method with a 1x1 field and only mines.*/
+    @Test
+    public final void testCountAdjacentMines_OneMine() {
+        char[][] oneByOne = {{'*'}};
+        int count = minesweeper.countAdjacentMines(oneByOne, 0, 0);
+        Assertions.assertEquals(0, count);
+        count = minesweeper.countAdjacentMines(oneByOne, 1, 1);
+        Assertions.assertEquals(1, count);
+    }
+
+    /** Test for the countAdjacentMines method with a 100x100 field and only mines.*/
+    @Test
+    public final void testCountAdjacentMines_HundredByHundred_AllMines() {
+        char[][] hundredByHundred = new char[100][100];
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 100; j++) {
+                hundredByHundred[i][j] = '*';
+            }
+        }
+        int count = minesweeper.countAdjacentMines(hundredByHundred, 0, 0);
+        Assertions.assertEquals(3, count);
+
+        count = minesweeper.countAdjacentMines(hundredByHundred, 40, 35);
+        Assertions.assertEquals(8, count);
+
+        count = minesweeper.countAdjacentMines(hundredByHundred, 99, 99);
+        Assertions.assertEquals(3, count);
+    }
+
+    /** Test for the countAdjacentMines method with a 100x100 field and no mines.*/
+    @Test
+    public final void testCountAdjacentMines_HundredByHundred_AllDots() {
+        char[][] hundredByHundred = new char[100][100];
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 100; j++) {
+                hundredByHundred[i][j] = '.';
+            }
+        }
+        int count = minesweeper.countAdjacentMines(hundredByHundred, 0, 0);
+        Assertions.assertEquals(0, count);
+
+        count = minesweeper.countAdjacentMines(hundredByHundred, 40, 35);
+        Assertions.assertEquals(0, count);
+
+        count = minesweeper.countAdjacentMines(hundredByHundred, 99, 99);
+        Assertions.assertEquals(0, count);
+    }
+
     /** Test for our countAdjacentMines Method.*/
     @Test
     public void testCountAdjacentMines() {
@@ -252,6 +374,8 @@ public class MineSweeperTest {
         count = minesweeper.countAdjacentMines(field, 3, 3);
         assertEquals(1, count);
     }
+
+    /** Test for the start method.*/
     @Test
     public void testStartEmpty() {
         // Test empty field
